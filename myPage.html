@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="HandheldFriendly" content="true" />
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <h1>Download file from server demo</h1>
+    <div id="infoArea">
+        <p>Waiting for button press...</p>
+    </div>
+    <button id="downloadButton" onclick="downloadFileFromServer()">Download file from server...</button>
+    <div id="downloadStatusArea"></div>
+    <script>
+        function downloadFileFromServer() {
+            document.getElementById("downloadButton").disabled = true;
+            document.getElementById("infoArea").innerHTML = "<p>Button pressed.</p>";
+            httpGetAsync("/getFile", function () { });
+        }
+
+        //https://stackoverflow.com/a/4033310/51358
+        function httpGetAsync(theUrl, callback) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.responseType = 'blob';
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                    var blob = xmlHttp.response;                    
+                    saveBlob(blob, "myDownload_" + getDateTimeAsStr() + ".exe");
+                }
+            }
+            xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+            xmlHttp.send(null);
+        }
+
+        //https://stackoverflow.com/a/44435573/51358
+        function saveBlob(blob, fileNameWithDateTime) {
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = fileNameWithDateTime;
+            a.dispatchEvent(new MouseEvent('click'));
+            document.getElementById("downloadStatusArea").innerHTML = "<p>File downloaded as " +
+                fileNameWithDateTime + ".</p>";
+            document.getElementById("downloadButton").disabled = false;
+        }
+
+        //https://stackoverflow.com/a/10211214/51358
+        function getDateTimeAsStr() {
+            // For todays date;
+            Date.prototype.today = function () {
+                return this.getFullYear() + "-" + 
+                (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "-" + 
+                ((this.getDate() < 10) ? "0" : "") + this.getDate();
+            }
+            // For the time now
+            Date.prototype.timeNow = function () {
+                return ((this.getHours() < 10) ? "0" : "") + this.getHours() + "-" + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + "-" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds();
+            }
+            var newDate = new Date();
+            var datetime = newDate.today() + "_" + newDate.timeNow();
+            return datetime;
+        }
+    </script>
+</body>
+
+</html>
