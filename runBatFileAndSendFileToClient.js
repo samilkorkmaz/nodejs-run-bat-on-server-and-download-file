@@ -26,7 +26,7 @@ const server = http.createServer(function (req, res) {
             child_process.exec(batchFilePath, function (error, stdout, stderr) {
                 console.log(stdout);
                 if (error) {
-                    const msg = 'Error executing ' + batchFilePath;
+                    const msg = 'Error executing ' + batchFilePath + ".Error: " + error;
                     console.log(msg);
                     res.writeHead(500);
                     return res.end(msg);
